@@ -1,0 +1,7 @@
+module AnimaSound.Components
+AppHeader 1.0 AppHeader.qml
+DropZone 1.0 DropZone.qml
+ToolPanel 1.0 ToolPanel.qml
+VisualizationPanel 1.0 VisualizationPanel.qml
+ToolSection 1.0 ToolSection.qml
+ActionButton 1.0 ActionButton.qml
