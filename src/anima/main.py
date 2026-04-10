@@ -67,6 +67,9 @@ def main():
     
     audio_processor.file_loaded.connect(on_audio_loaded)
     
+    # Connect chart progress to audio processor progress
+    chart_backend.chart_progress.connect(audio_processor.progress_updated)
+    
     # Load the QML file
     try:
         qml_url = get_qml_path()

@@ -56,10 +56,11 @@ class ChartWorker(QObject):
 
 class ChartBackend(QObject):
     """Backend for generating and managing matplotlib charts."""
-    
+
     chart_ready = Signal(str)  # chart type
     chart_error = Signal(str)  # error message
     chart_image_changed = Signal()  # emitted when chart image changes
+    chart_progress = Signal(float)  # 0-100
     
     def __init__(self):
         super().__init__()
@@ -245,29 +246,35 @@ class ChartBackend(QObject):
             'chroma': self.generate_chroma,
             'tempogram': self.generate_tempogram,
         }
-        
+
         generator = generators.get(chart_type)
         if not generator:
             self.chart_error.emit(f"Unknown chart type: {chart_type}")
             return
-        
+
+        # Emit progress start
+        self.chart_progress.emit(10)
+
         # Stop any existing worker thread
         if self._worker_thread and self._worker_thread.isRunning():
             self._worker_thread.quit()
             self._worker_thread.wait()
-        
+
         # Create and start worker thread
         self._worker_thread = QThread()
-        self._worker = ChartWorker(generator, chart_type, self._audio_data, 
+        self._worker = ChartWorker(generator, chart_type, self._audio_data,
                                    self._sample_rate, self._temp_dir)
         self._worker.moveToThread(self._worker_thread)
-        
+
         # Connect signals
         self._worker_thread.started.connect(self._worker.run)
         self._worker.finished.connect(self._worker_thread.quit)
         self._worker.chart_done.connect(self._on_chart_done)
         self._worker.chart_error_signal.connect(self._on_chart_error)
-        
+
+        # Emit more progress
+        self.chart_progress.emit(50)
+
         # Start thread
         self._worker_thread.start()
     
