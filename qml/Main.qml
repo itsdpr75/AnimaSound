@@ -196,14 +196,6 @@ ApplicationWindow {
                     accentColor: root.accentColor
                     backgroundColor: root.backgroundColor
                     textSecondary: root.textSecondary
-
-                    onChartChanged: function(chartType) {
-                        console.log("Chart changed:", chartType)
-                        if (root.audioLoaded) {
-                            vizPanel.setStatus("Generating " + chartType + " chart...")
-                            chartBackend.generate_chart(chartType)
-                        }
-                    }
                 }
             }
         }
@@ -222,7 +214,9 @@ ApplicationWindow {
             root.isProcessing = false
             root.processingProgress = 100
             vizPanel.setStatus("Loaded: " + filename)
-            chartBackend.generate_chart('waveform')
+            
+            // Start generating all charts sequentially
+            vizPanel.generateAllCharts()
         }
 
         function onError_occurred(message) {
@@ -264,6 +258,12 @@ ApplicationWindow {
             root.isProcessing = false
             root.processingProgress = 100
             vizPanel.setStatus("Chart ready: " + chartType)
+        }
+
+        function onAll_charts_complete() {
+            root.isProcessing = false
+            root.processingProgress = 100
+            vizPanel.setStatus("All charts generated!")
         }
 
         function onChart_error(message) {

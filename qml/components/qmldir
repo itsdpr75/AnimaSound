@@ -5,3 +5,4 @@ ToolPanel 1.0 ToolPanel.qml
 VisualizationPanel 1.0 VisualizationPanel.qml
 ToolSection 1.0 ToolSection.qml
 ActionButton 1.0 ActionButton.qml
+ChartCard 1.0 ChartCard.qml

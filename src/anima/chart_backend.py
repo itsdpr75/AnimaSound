@@ -61,6 +61,7 @@ class ChartBackend(QObject):
     chart_error = Signal(str)  # error message
     chart_image_changed = Signal()  # emitted when chart image changes
     chart_progress = Signal(float)  # 0-100
+    all_charts_complete = Signal()  # emitted when all charts are done
     
     def __init__(self):
         super().__init__()
@@ -70,6 +71,10 @@ class ChartBackend(QObject):
         self._chart_image = QImage()  # Store the current chart image
         self._chart_image_path = ""  # Path to saved image
         self._temp_dir = tempfile.gettempdir()
+        self._worker_thread = None
+        self._worker = None
+        self._chart_queue = ['waveform', 'spectrogram', 'melspectrogram', 'chroma', 'tempogram']
+        self._current_chart_index = 0
         self._worker_thread = None
         self._worker = None
         
@@ -279,16 +284,21 @@ class ChartBackend(QObject):
         self._worker_thread.start()
     
     def _on_chart_done(self, chart_type, image_path):
-        """Called when chart generation completes."""
-        self._current_chart = chart_type
-        self._chart_image_path = image_path
-        
-        # Load the image
-        image = QImage(image_path)
-        self._chart_image = image
-        self.chart_image_changed.emit()
+        """Handle chart completion and generate next chart."""
+        self.chart_progress.emit(100)
         self.chart_ready.emit(chart_type)
-    
+        
+        # Generate next chart in queue
+        self._current_chart_index += 1
+        if self._current_chart_index < len(self._chart_queue):
+            next_chart = self._chart_queue[self._current_chart_index]
+            progress = 10 + (self._current_chart_index * 15)
+            self.chart_progress.emit(min(progress, 90))
+            self.generate_chart(next_chart)
+        else:
+            self.all_charts_complete.emit()
+            self._current_chart_index = 0
+
     def _on_chart_error(self, error_msg):
         """Called when chart generation fails."""
         self.chart_error.emit(error_msg)

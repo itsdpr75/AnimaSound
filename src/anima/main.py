@@ -62,7 +62,9 @@ def main():
             audio_processor.get_audio_data(),
             audio_processor.get_sample_rate()
         )
-        # Generate default waveform
+        # Reset chart queue
+        chart_backend._current_chart_index = 0
+        # Generate all charts sequentially
         chart_backend.generate_chart('waveform')
     
     audio_processor.file_loaded.connect(on_audio_loaded)
