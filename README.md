@@ -1,5 +1,6 @@
 - abandoned unu
 - 40% del codigo es IA (qwen)
+- the markdown is AI generated (srr el mio era bastante kk)
 
 # AnimaSound
 
