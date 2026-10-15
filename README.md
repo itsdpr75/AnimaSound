@@ -1,5 +1,5 @@
 - abandoned unu
-
+- 40% del codigo es IA (qwen)
 
 # AnimaSound
 
