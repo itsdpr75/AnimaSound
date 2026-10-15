@@ -1,3 +1,6 @@
+- abandoned unu
+
+
 # AnimaSound
 
 A modern desktop application for audio analysis and manipulation, built with PySide6 and librosa.
